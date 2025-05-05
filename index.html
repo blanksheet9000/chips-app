@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" name="theme-color" content="#007aff">
+  <link rel="manifest" href="manifest.json">
+  <title>Чипсы, которые ты пробовал</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #fff;
+      --accent: #007aff;
+      --text: #1c1c1e;
+      --text-secondary: #8e8e93;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: var(--card);
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.3s ease;
+    }
+
+    li.tried {
+      background: #e0f5e9;
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #005ecb;
+    }
+
+    .input-group {
+      display: flex;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Какие чипсы ты пробовал?</h1>
+
+    <ul id="chips-list"></ul>
+
+    <div class="input-group">
+      <input type="text" id="new-chip" placeholder="Добавить чипсы...">
+      <button onclick="addChip()">Добавить</button>
+    </div>
+
+    <div class="footer-note">Твои данные сохраняются локально</div>
+  </div>
+
+  <script>
+    const defaultChips = [
+      "Lay's Classic",
+      "Pringles Sour Cream",
+      "Doritos Nacho Cheese",
+      "Cheetos",
+      "Ruffles",
+      "Lay's Barbecue",
+      "Pringles Hot & Spicy",
+    ];
+
+    let chips = JSON.parse(localStorage.getItem('chips')) || defaultChips;
+    let triedState = JSON.parse(localStorage.getItem('triedChips')) || {};
+
+    const listElement = document.getElementById('chips-list');
+
+    function saveData() {
+      localStorage.setItem('chips', JSON.stringify(chips));
+      localStorage.setItem('triedChips', JSON.stringify(triedState));
+    }
+
+    function renderChips() {
+      listElement.innerHTML = '';
+      chips.forEach((chip, index) => {
+        const li = document.createElement('li');
+        li.classList.toggle('tried', triedState[index]);
+        li.innerHTML = `
+          <span>${chip}</span>
+          <button onclick="toggleTried(${index})">
+            ${triedState[index] ? 'Отменить' : 'Пробовал'}
+          </button>
+        `;
+        listElement.appendChild(li);
+      });
+    }
+
+    function toggleTried(index) {
+      triedState[index] = !triedState[index];
+      saveData();
+      renderChips();
+    }
+
+    function addChip() {
+      const input = document.getElementById('new-chip');
+      const value = input.value.trim();
+      if (value) {
+        chips.push(value);
+        input.value = '';
+        saveData();
+        renderChips();
+      }
+    }
+
+    renderChips();
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker зарегистрирован'))
+      .catch(err => console.error('Service Worker ошибка:', err));
+  }
+</script>
+
+</body>
+</html>
