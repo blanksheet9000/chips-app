@@ -1,10 +1,10 @@
-
-<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" name="theme-color" content="#007aff">
-  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
   <title>Чипсы, которые ты пробовал</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007aff">
   <style>
     :root {
       --bg: #f5f5f7;
@@ -14,46 +14,6 @@
       --text-secondary: #8e8e93;
     }
 
-
-    .card-slider {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 16px;
-}
-
-.card-slider::-webkit-scrollbar {
-  display: none;
-}
-
-.card {
-  flex: 0 0 80%;
-  scroll-snap-align: center;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-  overflow: hidden;
-  transition: transform 0.3s;
-}
-
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.card-content {
-  padding: 16px;
-}
-
-.card h3 {
-  margin: 0 0 10px;
-}
-
-.card button {
-  width: 100%;
-}
     body {
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
@@ -77,62 +37,62 @@
       margin-bottom: 20px;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    li {
-      background: var(--card);
-      border: 1px solid #e5e5ea;
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 10px;
+    .card-slider {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: 0.3s ease;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 16px;
     }
 
-    li.tried {
-      background: #e0f5e9;
-      text-decoration: line-through;
-      color: var(--text-secondary);
+    .card-slider::-webkit-scrollbar {
+      display: none;
     }
 
-    button {
+    .card {
+      flex: 0 0 80%;
+      scroll-snap-align: center;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .card.clicked {
+      transform: scale(1.02);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .card-content {
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .card button {
+      width: 100%;
       background: var(--accent);
       border: none;
       color: white;
-      padding: 6px 12px;
+      padding: 10px;
       border-radius: 10px;
       font-size: 14px;
       cursor: pointer;
       transition: background 0.2s ease;
     }
 
-    button:hover {
+    .card button:hover {
       background: #005ecb;
-    }
-
-    .input-group {
-      display: flex;
-      margin-top: 20px;
-      gap: 10px;
-    }
-
-    input {
-      flex: 1;
-      padding: 10px 14px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: var(--accent);
     }
 
     .footer-note {
@@ -147,91 +107,81 @@
 
   <div class="container">
     <h1>Какие чипсы ты пробовал?</h1>
-
     <div class="card-slider" id="chip-cards"></div>
-
-    <div class="input-group">
-      <input type="text" id="new-chip" placeholder="Добавить чипсы...">
-      <button onclick="addChip()">Добавить</button>
-    </div>
-
     <div class="footer-note">Твои данные сохраняются локально</div>
   </div>
 
   <script>
     const defaultChips = [
-  {
-    name: "Lay's Classic",
-    img: "https://i.imgur.com/7yUvePI.jpg"
-  },
-  {
-    name: "Pringles Sour Cream",
-    img: "https://i.imgur.com/tEJw1B6.jpg"
-  },
-  {
-    name: "Doritos Nacho Cheese",
-    img: "https://i.imgur.com/IH8YzJS.jpg"
-  }
-];
+      {
+        name: "Lay's Classic",
+        img: "https://i.imgur.com/7yUvePI.jpg"
+      },
+      {
+        name: "Pringles Sour Cream",
+        img: "https://i.imgur.com/tEJw1B6.jpg"
+      },
+      {
+        name: "Doritos Nacho Cheese",
+        img: "https://i.imgur.com/IH8YzJS.jpg"
+      },
+      {
+        name: "Cheetos",
+        img: "https://i.imgur.com/DNCnTLO.jpg"
+      },
+      {
+        name: "Lay's Barbecue",
+        img: "https://i.imgur.com/UdGrFk3.jpg"
+      }
+    ];
 
-    let chips = JSON.parse(localStorage.getItem('chips')) || defaultChips;
     let triedState = JSON.parse(localStorage.getItem('triedChips')) || {};
 
-    const listElement = document.getElementById('chips-list');
-
     function saveData() {
-      localStorage.setItem('chips', JSON.stringify(chips));
       localStorage.setItem('triedChips', JSON.stringify(triedState));
     }
 
     function renderCards() {
-  const container = document.getElementById('chip-cards');
-  container.innerHTML = '';
-  defaultChips.forEach((chip, index) => {
-    const tried = triedState[index];
-    const card = document.createElement('div');
-    card.className = 'card';
-    if (tried) card.style.opacity = '0.5';
+      const container = document.getElementById('chip-cards');
+      container.innerHTML = '';
+      defaultChips.forEach((chip, index) => {
+        const tried = triedState[index];
+        const card = document.createElement('div');
+        card.className = 'card';
+        if (tried) card.style.opacity = '0.5';
 
-    card.innerHTML = `
-      <img src="${chip.img}" alt="${chip.name}">
-      <div class="card-content">
-        <h3>${chip.name}</h3>
-        <button onclick="toggleTried(${index})">
-          ${tried ? 'Отменить' : 'Пробовал'}
-        </button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
+        card.innerHTML = `
+          <img src="${chip.img}" alt="${chip.name}">
+          <div class="card-content">
+            <h3>${chip.name}</h3>
+            <button onclick="toggleTried(${index}, this)">
+              ${tried ? 'Отменить' : 'Пробовал'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-    function toggleTried(index) {
+    function toggleTried(index, button) {
       triedState[index] = !triedState[index];
       saveData();
-      renderCards();
+
+      const card = button.closest('.card');
+      card.classList.add('clicked');
+      setTimeout(() => {
+        card.classList.remove('clicked');
+        renderCards();
+      }, 200);
     }
 
-    function addChip() {
-      const input = document.getElementById('new-chip');
-      const value = input.value.trim();
-      if (value) {
-        chips.push(value);
-        input.value = '';
-        saveData();
-        renderChips();
-      }
-    }
+    renderCards();
 
-    renderChips();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker зарегистрирован'))
+        .catch(err => console.error('Service Worker ошибка:', err));
+    }
   </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker зарегистрирован'))
-      .catch(err => console.error('Service Worker ошибка:', err));
-  }
-</script>
-
 </body>
 </html>
