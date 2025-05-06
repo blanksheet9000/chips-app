@@ -7,8 +7,8 @@
   <style>
     :root {
       --bg: #f5f5f7;
-      --card: #fff;
       --accent: #007aff;
+      --gold: linear-gradient(135deg, #FFD700, #FFB700);
       --text: #1c1c1e;
       --text-secondary: #8e8e93;
     }
@@ -21,11 +21,6 @@
       color: var(--text);
     }
 
-    .container {
-      max-width: 480px;
-      margin: auto;
-    }
-
     h1 {
       font-size: 24px;
       text-align: center;
@@ -35,78 +30,77 @@
     .card-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
     .card {
       background: white;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease;
-      display: flex;
-      flex-direction: column;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, border 0.3s ease;
+      border: 4px solid transparent;
+    }
+
+    .card.checked {
+      border-image: var(--gold) 1;
+      border-image-slice: 1;
     }
 
     .card.clicked {
-      transform: scale(1.01);
+      transform: scale(1.02);
     }
 
     .card img {
       width: 100%;
-      height: 180px;
+      height: 200px;
       object-fit: cover;
+      display: block;
     }
 
     .card-content {
       padding: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .card h3 {
-      margin: 0;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .checkmark {
-      color: green;
+      color: #FFD700;
       font-size: 20px;
       display: none;
     }
 
-    .checked .checkmark {
+    .card.checked .checkmark {
       display: inline;
     }
 
     .card button {
       background: var(--accent);
-      border: none;
       color: white;
-      padding: 8px 12px;
+      border: none;
+      padding: 10px 16px;
       border-radius: 10px;
-      font-size: 14px;
       cursor: pointer;
+      font-size: 14px;
     }
 
     .footer-note {
-      text-align: center;
+      margin-top: 30px;
       font-size: 12px;
       color: var(--text-secondary);
-      margin-top: 20px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Какие чипсы ты пробовал?</h1>
-    <div class="card-list" id="chip-cards"></div>
-    <div class="footer-note">Твои данные сохраняются локально</div>
-  </div>
+  <h1>Какие чипсы ты пробовал?</h1>
+  <div class="card-list" id="chip-cards"></div>
+  <div class="footer-note">Твои данные сохраняются локально</div>
 
   <script>
     const chips = [
@@ -127,15 +121,14 @@
       const container = document.getElementById("chip-cards");
       container.innerHTML = "";
       chips.forEach((chip, i) => {
+        const checked = tried[i];
         const card = document.createElement("div");
-        card.className = "card" + (tried[i] ? " checked" : "");
+        card.className = "card" + (checked ? " checked" : "");
         card.innerHTML = `
           <img src="${chip.img}" alt="${chip.name}">
           <div class="card-content">
-            <h3>${chip.name} <span class="checkmark">✔</span></h3>
-            <button onclick="toggle(${i}, this)">${
-              tried[i] ? "Отменить" : "Пробовал"
-            }</button>
+            <h3>${chip.name} <span class="checkmark">★</span></h3>
+            <button onclick="toggle(${i}, this)">${checked ? "Отменить" : "Пробовал"}</button>
           </div>
         `;
         container.appendChild(card);
@@ -147,13 +140,10 @@
       save();
       const card = btn.closest(".card");
       card.classList.add("clicked");
-      setTimeout(() => {
-        render();
-      }, 150);
+      setTimeout(() => render(), 150);
     }
 
     render();
   </script>
 </body>
 </html>
-
