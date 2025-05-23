@@ -2,148 +2,29 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Чипсы, которые ты пробовал</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg: #f5f5f7;
-      --accent: #007aff;
-      --gold: linear-gradient(135deg, #FFD700, #FFB700);
-      --text: #1c1c1e;
-      --text-secondary: #8e8e93;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      margin: 0;
-      padding: 20px;
-      color: var(--text);
-    }
-
-    h1 {
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .card-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease, border 0.3s ease;
-      border: 4px solid transparent;
-    }
-
-    .card.checked {
-      border-image: var(--gold) 1;
-      border-image-slice: 1;
-    }
-
-    .card.clicked {
-      transform: scale(1.02);
-    }
-
-    .card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .card-content {
-      padding: 16px;
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .checkmark {
-      color: #FFD700;
-      font-size: 20px;
-      display: none;
-    }
-
-    .card.checked .checkmark {
-      display: inline;
-    }
-
-    .card button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .footer-note {
-      margin-top: 30px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-  </style>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Коллекция Чипсов</title>
 </head>
 <body>
-  <h1>Какие чипсы ты пробовал?</h1>
-  <div class="card-list" id="chip-cards"></div>
-  <div class="footer-note">Твои данные сохраняются локально</div>
+  <h1>Моя коллекция чипсов</h1>
 
-  <script>
-    const chips = [
-      { name: "Lay's Classic", img: "https://i.imgur.com/7yUvePI.jpg" },
-      { name: "Pringles Sour Cream", img: "https://i.imgur.com/tEJw1B6.jpg" },
-      { name: "Doritos Nacho Cheese", img: "https://i.imgur.com/IH8YzJS.jpg" },
-      { name: "Cheetos", img: "https://i.imgur.com/DNCnTLO.jpg" },
-      { name: "Lay's Barbecue", img: "https://i.imgur.com/UdGrFk3.jpg" }
-    ];
+  <div id="tabs">
+    <button onclick="setTab('all')">Все</button>
+    <button onclick="setTab('fav')">Избранное ❤</button>
+  </div>
 
-    let tried = JSON.parse(localStorage.getItem("triedChips")) || {};
+  <input type="text" id="search" placeholder="Поиск по названию..." />
+  <select id="brand-filter">
+    <option value="">Все бренды</option>
+    <option value="Lays">Lays</option>
+    <option value="Pringles">Pringles</option>
+    <option value="Cheetos">Cheetos</option>
+  </select>
 
-    function save() {
-      localStorage.setItem("triedChips", JSON.stringify(tried));
-    }
+  <div id="chip-list" class="card-container"></div>
 
-    function render() {
-      const container = document.getElementById("chip-cards");
-      container.innerHTML = "";
-      chips.forEach((chip, i) => {
-        const checked = tried[i];
-        const card = document.createElement("div");
-        card.className = "card" + (checked ? " checked" : "");
-        card.innerHTML = `
-          <img src="${chip.img}" alt="${chip.name}">
-          <div class="card-content">
-            <h3>${chip.name} <span class="checkmark">★</span></h3>
-            <button onclick="toggle(${i}, this)">${checked ? "Отменить" : "Пробовал"}</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function toggle(i, btn) {
-      tried[i] = !tried[i];
-      save();
-      const card = btn.closest(".card");
-      card.classList.add("clicked");
-      setTimeout(() => render(), 150);
-    }
-
-    render();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
